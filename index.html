@@ -175,7 +175,7 @@
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+		navigator.serviceWorker.register(BASE_PATH + 'sw.js')    
                     .then(registration => {
                         console.log('SW registered:', registration);
                     })
@@ -188,7 +188,10 @@
     
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
-        
+        const BASE_PATH = window.location.pathname.includes('/okinawa-solo-trip-2025')
+        ? '/okinawa-solo-trip-2025/'
+        : '/';
+ 
         // ========== MOCK DATA ==========
         const itineraryData = [
             {
@@ -226,7 +229,7 @@
                 highlight: 'YOASOBI',
                 highlightColor: 'bg-apple-purple',
                 emoji: '🎤',
-                banner: '/okinawa-solo-trip-2025/yoasobi-banner.png',
+                banner: BASE_PATH + 'yoasobi-banner.png',
                 activities: [
                     { time: '09:30', title: '波上宮參拜', desc: '沖繩最著名的神社', icon: 'landmark' },
                     { time: '11:30', title: '波上海灘散步', desc: '欣賞海景、拍照留念', icon: 'waves' },
