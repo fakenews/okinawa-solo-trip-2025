@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#ffffff">
+    <title>Okinawa Solo Trip 2025</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #f5f5f7;
+            overscroll-behavior: none;
+        }
+        
+        .safe-area-top {
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+        
+        .safe-area-bottom {
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+        }
+        
+        .tab-bar-safe {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+        
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .timeline-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+        }
+        
+        .timeline-line {
+            width: 2px;
+            background: linear-gradient(180deg, #007AFF 0%, #5856D6 100%);
+            opacity: 0.3;
+        }
+        
+        .checkbox-custom {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d1d6;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .checkbox-custom:checked {
+            background: linear-gradient(135deg, #34C759 0%, #30D158 100%);
+            border-color: transparent;
+        }
+        
+        .checkbox-custom:checked::after {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            height: 100%;
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .accordion-content.open {
+            max-height: 1000px;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'apple-blue': '#007AFF',
+                        'apple-purple': '#5856D6',
+                        'apple-green': '#34C759',
+                        'apple-orange': '#FF9500',
+                        'apple-red': '#FF3B30',
+                        'apple-gray': {
+                            100: '#f5f5f7',
+                            200: '#e8e8ed',
+                            300: '#d1d1d6',
+                            400: '#aeaeb2',
+                            500: '#8e8e93',
+                            600: '#636366',
+                            700: '#48484a',
+                            800: '#3a3a3c',
+                            900: '#1d1d1f'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+    </script>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // ========== MOCK DATA ==========
+        const itineraryData = [
+            {
+                day: 1,
+                date: '11/28 (四)',
+                title: '抵達日',
+                highlight: '免稅購物',
+                highlightColor: 'bg-apple-orange',
+                emoji: '🛬',
+                activities: [
+                    { time: '14:00', title: '那霸機場抵達', desc: '通關、提領行李', icon: 'plane-landing' },
+                    { time: '15:30', title: '飯店 Check-in', desc: '放置行李、稍作休息', icon: 'hotel' },
+                    { time: '17:00', title: '購買 iPad Pro M5', desc: '前往新都心 Apple Store 或國際通 BicCamera\n⚠️ 記得帶護照辦免稅！', icon: 'tablet', important: true },
+                    { time: '19:30', title: '晚餐：豬肉蛋飯糰', desc: '國際通本店或牧志市場店', icon: 'utensils' }
+                ]
+            },
+            {
+                day: 2,
+                date: '11/29 (五)',
+                title: '棒球日',
+                highlight: '冬季聯盟',
+                highlightColor: 'bg-apple-green',
+                emoji: '⚾',
+                activities: [
+                    { time: '10:00', title: '悠閒早午餐', desc: 'A&W 漢堡或飯店早餐', icon: 'coffee' },
+                    { time: '12:00', title: '前往球場', desc: '預留交通時間（無租車）\n建議搭公車或計程車', icon: 'bus', important: true },
+                    { time: '14:00', title: '冬季聯盟比賽', desc: '享受沖繩的棒球氛圍！', icon: 'trophy' },
+                    { time: '18:30', title: '那霸居酒屋', desc: '體驗當地夜生活', icon: 'beer' }
+                ]
+            },
+            {
+                day: 3,
+                date: '11/30 (六)',
+                title: '演唱會日',
+                highlight: 'YOASOBI',
+                highlightColor: 'bg-apple-purple',
+                emoji: '🎤',
+                banner: 'yoasobi-banner.png',
+                activities: [
+                    { time: '09:30', title: '波上宮參拜', desc: '沖繩最著名的神社', icon: 'landmark' },
+                    { time: '11:30', title: '波上海灘散步', desc: '欣賞海景、拍照留念', icon: 'waves' },
+                    { time: '13:00', title: '午餐', desc: '泊港魚市場吃海鮮', icon: 'fish' },
+                    { time: '15:00', title: '前往宜野灣', desc: '搭公車前往沖繩會議中心\n⚠️ 提早出發卡位', icon: 'map-pin', important: true },
+                    { time: '18:00', title: 'YOASOBI 演唱會', desc: '沖繩會議中心\n🎵 盡情享受！', icon: 'music', important: true },
+                    { time: '21:30', title: '回程注意', desc: '演唱會散場交通擁擠\n建議提前預約計程車', icon: 'alert-circle', important: true }
+                ]
+            },
+            {
+                day: 4,
+                date: '12/1 (日)',
+                title: '離境日',
+                highlight: '回程',
+                highlightColor: 'bg-apple-blue',
+                emoji: '✈️',
+                activities: [
+                    { time: '09:00', title: '最後補貨', desc: '便利商店、藥妝店', icon: 'shopping-bag' },
+                    { time: '10:00', title: '寄明信片', desc: '郵局或飯店代寄', icon: 'mail' },
+                    { time: '11:00', title: 'Check-out', desc: '確認沒有遺漏物品', icon: 'log-out' },
+                    { time: '14:00', title: '前往機場', desc: '預留充足時間', icon: 'plane' }
+                ]
+            }
+        ];
+        
+        const todoData = [
+            { id: 1, text: '購買 iPad Pro M5', emoji: '📱', checked: false },
+            { id: 2, text: '確認免稅資格（帶護照）', emoji: '🛂', checked: false },
+            { id: 3, text: '寄明信片給朋友', emoji: '💌', checked: false },
+            { id: 4, text: '泊港魚市場吃海鮮', emoji: '🦐', checked: false },
+            { id: 5, text: '看冬季聯盟棒球', emoji: '⚾', checked: false },
+            { id: 6, text: '參加 YOASOBI 演唱會', emoji: '🎤', checked: false },
+            { id: 7, text: '波上宮參拜', emoji: '⛩️', checked: false },
+            { id: 8, text: '吃豬肉蛋飯糰', emoji: '🍙', checked: false },
+            { id: 9, text: '體驗居酒屋文化', emoji: '🍺', checked: false }
+        ];
+        
+        const guideData = [
+            {
+                id: 'transport',
+                title: '交通指南',
+                emoji: '🚃',
+                content: [
+                    { subtitle: '單軌電車 Yui Rail', text: '• 那霸市區主要交通工具\n• 營運時間：06:00-23:30\n• 建議購買一日券或兩日券\n• 機場站 ↔ 縣廳前站 約15分鐘' },
+                    { subtitle: '公車', text: '• 前往宜野灣可搭 32、55、112 號公車\n• 建議使用 OKICA 卡或準備零錢\n• Google Maps 可查詢公車路線' },
+                    { subtitle: '計程車', text: '• 起跳價約 560 日圓\n• 演唱會散場建議提前預約\n• 可請飯店協助叫車' }
+                ]
+            },
+            {
+                id: 'food',
+                title: '美食推薦',
+                emoji: '🍽️',
+                content: [
+                    { subtitle: '泊港魚市場', text: '• 新鮮海鮮丼、生魚片\n• 適合單人用餐\n• 營業至約18:00' },
+                    { subtitle: 'A&W 漢堡', text: '• 沖繩限定速食店\n• 推薦 Root Beer 汽水\n• 機場、國際通都有分店' },
+                    { subtitle: '暖暮拉麵', text: '• 濃郁豚骨湯頭\n• 適合一個人吃\n• 國際通附近有分店' },
+                    { subtitle: '豬肉蛋飯糰', text: '• 沖繩必吃！\n• 牧志市場本店常排隊\n• 建議早點去' }
+                ]
+            },
+            {
+                id: 'shopping',
+                title: '購物提醒',
+                emoji: '🛍️',
+                content: [
+                    { subtitle: 'iPad Pro 購買檢查', text: '✅ 攜帶護照（免稅必備）\n✅ 事先確認庫存（可電話或線上查）\n✅ 確認是否為日本版本\n✅ 檢查保固範圍' },
+                    { subtitle: '免稅流程', text: '• 單店消費滿 5,000 日圓可免稅\n• 結帳時出示護照\n• 免稅品會封裝，出境前勿拆封\n• 機場可能會抽查' },
+                    { subtitle: '推薦購物地點', text: '• 新都心 Apple Store\n• BicCamera 國際通店\n• 唐吉軻德（藥妝、零食）' }
+                ]
+            },
+            {
+                id: 'concert',
+                title: '演唱會特別提醒',
+                emoji: '🎵',
+                content: [
+                    { subtitle: '場地資訊', text: '📍 沖繩會議中心\n📍 地址：宜野灣市真志喜4-3-1\n⏰ 建議提早 2-3 小時抵達' },
+                    { subtitle: '交通建議', text: '🚌 去程：搭公車前往（約40-50分鐘）\n🚕 回程：強烈建議預約計程車\n⚠️ 散場時交通非常擁擠！' },
+                    { subtitle: '注意事項', text: '• 確認門票和身份證件\n• 了解場館規定（禁止攜帶物品）\n• 準備手燈、應援物\n• 手機充飽電！' }
+                ]
+            }
+        ];
+        
+        // ========== ICON COMPONENT ==========
+        const Icon = ({ name, size = 20, className = '' }) => {
+            const iconRef = useRef(null);
+            
+            useEffect(() => {
+                if (iconRef.current && lucide[name]) {
+                    iconRef.current.innerHTML = '';
+                    const svg = lucide.createElement(lucide[name]);
+                    svg.setAttribute('width', size);
+                    svg.setAttribute('height', size);
+                    iconRef.current.appendChild(svg);
+                }
+            }, [name, size]);
+            
+            const iconNameMap = {
+                'plane-landing': 'PlaneLanding',
+                'hotel': 'Hotel',
+                'tablet': 'Tablet',
+                'utensils': 'Utensils',
+                'coffee': 'Coffee',
+                'bus': 'Bus',
+                'trophy': 'Trophy',
+                'beer': 'Beer',
+                'landmark': 'Landmark',
+                'waves': 'Waves',
+                'fish': 'Fish',
+                'map-pin': 'MapPin',
+                'music': 'Music',
+                'alert-circle': 'AlertCircle',
+                'shopping-bag': 'ShoppingBag',
+                'mail': 'Mail',
+                'log-out': 'LogOut',
+                'plane': 'Plane',
+                'calendar': 'Calendar',
+                'check-square': 'CheckSquare',
+                'book-open': 'BookOpen',
+                'chevron-down': 'ChevronDown',
+                'chevron-up': 'ChevronUp',
+                'sun': 'Sun'
+            };
+            
+            const mappedName = iconNameMap[name] || name;
+            
+            useEffect(() => {
+                if (iconRef.current && lucide[mappedName]) {
+                    iconRef.current.innerHTML = '';
+                    const svg = lucide.createElement(lucide[mappedName]);
+                    svg.setAttribute('width', size);
+                    svg.setAttribute('height', size);
+                    className.split(' ').forEach(cls => {
+                        if (cls) svg.classList.add(cls);
+                    });
+                    iconRef.current.appendChild(svg);
+                }
+            }, [mappedName, size, className]);
+            
+            return <span ref={iconRef} className={`inline-flex items-center justify-center ${className}`} />;
+        };
+        
+        // ========== TAB BAR COMPONENT ==========
+        const TabBar = ({ activeTab, setActiveTab }) => {
+            const tabs = [
+                { id: 'itinerary', label: '行程', icon: 'Calendar' },
+                { id: 'todo', label: '必做清單', icon: 'CheckSquare' },
+                { id: 'guide', label: '攻略', icon: 'BookOpen' }
+            ];
+            
+            return (
+                <div className="fixed bottom-0 left-0 right-0 glass-effect border-t border-apple-gray-200 tab-bar-safe z-50">
+                    <div className="flex justify-around items-center h-16 max-w-lg mx-auto">
+                        {tabs.map(tab => {
+                            const iconRef = useRef(null);
+                            
+                            useEffect(() => {
+                                if (iconRef.current && lucide[tab.icon]) {
+                                    iconRef.current.innerHTML = '';
+                                    const svg = lucide.createElement(lucide[tab.icon]);
+                                    svg.setAttribute('width', 24);
+                                    svg.setAttribute('height', 24);
+                                    iconRef.current.appendChild(svg);
+                                }
+                            }, [tab.icon]);
+                            
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex flex-col items-center justify-center w-20 h-full transition-all duration-200 ${
+                                        activeTab === tab.id 
+                                            ? 'text-apple-blue' 
+                                            : 'text-apple-gray-400'
+                                    }`}
+                                >
+                                    <span ref={iconRef} className="mb-1" />
+                                    <span className="text-xs font-medium">{tab.label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        };
+        
+        // ========== HEADER COMPONENT ==========
+        const Header = () => {
+            return (
+                <div className="safe-area-top bg-white sticky top-0 z-40 border-b border-apple-gray-100">
+                    <div className="px-5 py-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-xl font-semibold text-apple-gray-900">Okinawa Solo Trip</h1>
+                                <p className="text-sm text-apple-gray-500">2025 · 4天3夜</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-apple-blue to-apple-purple flex items-center justify-center">
+                                <span className="text-white text-lg">🌺</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // ========== ITINERARY PAGE ==========
+        const ItineraryPage = () => {
+            const [expandedDay, setExpandedDay] = useState(1);
+            
+            return (
+                <div className="px-4 py-6 safe-area-bottom fade-in">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-apple-gray-900 mb-1">行程安排</h2>
+                        <p className="text-apple-gray-500">11/28 - 12/1 · 那霸為主</p>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        {itineraryData.map((day, dayIndex) => (
+                            <div 
+                                key={day.day}
+                                className={`bg-white rounded-2xl card-shadow overflow-hidden card-hover slide-up`}
+                                style={{ animationDelay: `${dayIndex * 0.1}s` }}
+                            >
+                                <button
+                                    onClick={() => setExpandedDay(expandedDay === day.day ? null : day.day)}
+                                    className="w-full px-5 py-4 flex items-center justify-between"
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <div className="text-3xl">{day.emoji}</div>
+                                        <div className="text-left">
+                                            <div className="flex items-center space-x-2">
+                                                <span className="font-semibold text-apple-gray-900">Day {day.day}</span>
+                                                <span className={`text-xs px-2 py-0.5 rounded-full text-white ${day.highlightColor}`}>
+                                                    {day.highlight}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-apple-gray-500">{day.date} · {day.title}</p>
+                                        </div>
+                                    </div>
+                                    <Icon 
+                                        name={expandedDay === day.day ? 'ChevronUp' : 'ChevronDown'} 
+                                        size={20} 
+                                        className="text-apple-gray-400"
+                                    />
+                                </button>
+                                
+                                <div className={`accordion-content ${expandedDay === day.day ? 'open' : ''}`}>
+                                    <div className="px-5 pb-5">
+                                        {/* YOASOBI Banner for Day 3 */}
+                                        {day.banner && (
+                                            <div className="mb-4 rounded-xl overflow-hidden card-shadow">
+                                                <img 
+                                                    src={day.banner} 
+                                                    alt="YOASOBI 應援布" 
+                                                    className="w-full h-auto"
+                                                />
+                                                <div className="bg-gradient-to-r from-indigo-900 to-purple-900 px-4 py-2 text-center">
+                                                    <span className="text-white text-sm font-medium">🇹🇼 台灣から来ました！</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="relative pl-6 border-l-2 border-apple-gray-100 space-y-4">
+                                            {day.activities.map((activity, index) => (
+                                                <div key={index} className="relative">
+                                                    <div className="absolute -left-[25px] w-3 h-3 rounded-full bg-gradient-to-br from-apple-blue to-apple-purple" />
+                                                    <div className={`ml-4 p-3 rounded-xl ${activity.important ? 'bg-amber-50 border border-amber-200' : 'bg-apple-gray-100'}`}>
+                                                        <div className="flex items-center space-x-2 mb-1">
+                                                            <span className="text-xs font-medium text-apple-blue">{activity.time}</span>
+                                                            {activity.important && <span className="text-xs">⚠️</span>}
+                                                        </div>
+                                                        <h4 className="font-medium text-apple-gray-900 text-sm">{activity.title}</h4>
+                                                        <p className="text-xs text-apple-gray-500 mt-1 whitespace-pre-line">{activity.desc}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+        
+        // ========== TODO PAGE ==========
+        const TodoPage = () => {
+            const [todos, setTodos] = useState(() => {
+                const saved = localStorage.getItem('okinawa-todos');
+                return saved ? JSON.parse(saved) : todoData;
+            });
+            
+            useEffect(() => {
+                localStorage.setItem('okinawa-todos', JSON.stringify(todos));
+            }, [todos]);
+            
+            const toggleTodo = (id) => {
+                setTodos(prev => prev.map(todo => 
+                    todo.id === id ? { ...todo, checked: !todo.checked } : todo
+                ));
+            };
+            
+            const completedCount = todos.filter(t => t.checked).length;
+            const progress = (completedCount / todos.length) * 100;
+            
+            return (
+                <div className="px-4 py-6 safe-area-bottom fade-in">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-apple-gray-900 mb-1">必做清單</h2>
+                        <p className="text-apple-gray-500">完成度 {completedCount}/{todos.length}</p>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-2xl card-shadow p-5 mb-6">
+                        <div className="flex items-center justify-between mb-3">
+                            <span className="text-sm font-medium text-apple-gray-700">旅程進度</span>
+                            <span className="text-sm font-semibold text-apple-green">{Math.round(progress)}%</span>
+                        </div>
+                        <div className="h-3 bg-apple-gray-100 rounded-full overflow-hidden">
+                            <div 
+                                className="h-full bg-gradient-to-r from-apple-green to-emerald-400 rounded-full transition-all duration-500"
+                                style={{ width: `${progress}%` }}
+                            />
+                        </div>
+                    </div>
+                    
+                    {/* Todo List */}
+                    <div className="bg-white rounded-2xl card-shadow overflow-hidden">
+                        {todos.map((todo, index) => (
+                            <div
+                                key={todo.id}
+                                onClick={() => toggleTodo(todo.id)}
+                                className={`flex items-center px-5 py-4 cursor-pointer transition-all duration-200 card-hover ${
+                                    index !== todos.length - 1 ? 'border-b border-apple-gray-100' : ''
+                                } ${todo.checked ? 'bg-apple-gray-50' : ''}`}
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={todo.checked}
+                                    onChange={() => {}}
+                                    className="checkbox-custom mr-4"
+                                />
+                                <span className="text-2xl mr-3">{todo.emoji}</span>
+                                <span className={`flex-1 font-medium transition-all duration-200 ${
+                                    todo.checked 
+                                        ? 'text-apple-gray-400 line-through' 
+                                        : 'text-apple-gray-900'
+                                }`}>
+                                    {todo.text}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* Reset Button */}
+                    <button
+                        onClick={() => setTodos(todoData)}
+                        className="w-full mt-4 py-3 text-apple-red text-sm font-medium rounded-xl bg-red-50 active:bg-red-100 transition-colors"
+                    >
+                        重設清單
+                    </button>
+                </div>
+            );
+        };
+        
+        // ========== GUIDE PAGE ==========
+        const GuidePage = () => {
+            const [openSection, setOpenSection] = useState('transport');
+            
+            return (
+                <div className="px-4 py-6 safe-area-bottom fade-in">
+                    <div className="mb-6">
+                        <h2 className="text-2xl font-bold text-apple-gray-900 mb-1">旅遊攻略</h2>
+                        <p className="text-apple-gray-500">實用資訊一手掌握</p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                        {guideData.map((section, sectionIndex) => (
+                            <div 
+                                key={section.id}
+                                className="bg-white rounded-2xl card-shadow overflow-hidden slide-up"
+                                style={{ animationDelay: `${sectionIndex * 0.1}s` }}
+                            >
+                                <button
+                                    onClick={() => setOpenSection(openSection === section.id ? null : section.id)}
+                                    className="w-full px-5 py-4 flex items-center justify-between"
+                                >
+                                    <div className="flex items-center space-x-3">
+                                        <span className="text-2xl">{section.emoji}</span>
+                                        <span className="font-semibold text-apple-gray-900">{section.title}</span>
+                                    </div>
+                                    <Icon 
+                                        name={openSection === section.id ? 'ChevronUp' : 'ChevronDown'} 
+                                        size={20} 
+                                        className="text-apple-gray-400"
+                                    />
+                                </button>
+                                
+                                <div className={`accordion-content ${openSection === section.id ? 'open' : ''}`}>
+                                    <div className="px-5 pb-5 space-y-4">
+                                        {section.content.map((item, index) => (
+                                            <div key={index} className="bg-apple-gray-50 rounded-xl p-4">
+                                                <h4 className="font-medium text-apple-gray-900 mb-2 text-sm">{item.subtitle}</h4>
+                                                <p className="text-sm text-apple-gray-600 whitespace-pre-line leading-relaxed">{item.text}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    
+                    {/* Emergency Info */}
+                    <div className="mt-6 bg-gradient-to-br from-apple-blue to-apple-purple rounded-2xl p-5 text-white">
+                        <h3 className="font-semibold mb-3">📞 緊急聯絡</h3>
+                        <div className="space-y-2 text-sm opacity-90">
+                            <p>• 日本緊急電話：110（警察）/ 119（消防、救護）</p>
+                            <p>• 台北駐日經濟文化代表處：+81-3-3280-7811</p>
+                            <p>• 旅遊日文求助：「助けてください」(Tasukete kudasai)</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+        
+        // ========== MAIN APP ==========
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('itinerary');
+            
+            const renderPage = () => {
+                switch (activeTab) {
+                    case 'itinerary':
+                        return <ItineraryPage />;
+                    case 'todo':
+                        return <TodoPage />;
+                    case 'guide':
+                        return <GuidePage />;
+                    default:
+                        return <ItineraryPage />;
+                }
+            };
+            
+            return (
+                <div className="min-h-screen bg-apple-gray-100">
+                    <Header />
+                    <main className="max-w-lg mx-auto">
+                        {renderPage()}
+                    </main>
+                    <TabBar activeTab={activeTab} setActiveTab={setActiveTab} />
+                </div>
+            );
+        };
+        
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
